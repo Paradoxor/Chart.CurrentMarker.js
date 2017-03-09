@@ -142,3 +142,106 @@ var CurrentMarkerPlugin = function (_Chart$PluginBase) {
 }(Chart.PluginBase);
 
 Chart.pluginService.register(new CurrentMarkerPlugin());
+
+
+var HorizonalLinePlugin = function (_Chart$PluginBase) {
+  _inherits(HorizonalLinePlugin, _Chart$PluginBase);
+
+  function HorizonalLinePlugin() {
+    _classCallCheck(this, HorizonalLinePlugin);
+
+    return _possibleConstructorReturn(this, (HorizonalLinePlugin.__proto__ || Object.getPrototypeOf(HorizonalLinePlugin)).apply(this, arguments));
+  }
+
+  _createClass(HorizonalLinePlugin, [{
+    key: 'beforeInit',
+    value: function beforeInit(chartInstance) {
+      this.config = chartInstance.options.currentMarker || {};
+      chartInstance._currentMarker = new CurrentMarkerLine({ _index: 0, config: this.config });
+    }
+  }, {
+    key: 'beforeDraw',
+    value: function beforeDraw(chartInstance) {
+      this.config = chartInstance.options.currentMarker || {};
+      chartInstance._currentMarker.setConfig(this.config);
+    }
+  }, {
+    key: 'afterDraw',
+    value: function afterDraw(chartInstance, easingDecimal) {
+    const ctx = chartInstance.chart.ctx;
+    const chartArea = chartInstance.chartArea;
+    const yScale = chartInstance.scales['y-axis-1'];
+
+    // Configuration
+    const handleWidth = 100;
+    const triangleWidth = 15;
+    const handleHeight = 30;
+    var index;
+    var line;
+    var style;
+    var yValue;
+
+    if (chartInstance.options.horizontalLine) {
+      for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
+        line = chartInstance.options.horizontalLine[index];
+
+        if (!line.style) {
+          style = 'rgba(46, 153, 122, 1)';
+        } else {
+          style = line.style;
+        }
+
+        if (line.y) {
+          yValue = yScale.getPixelForValue(line.y);
+        } else {
+          yValue = 0;
+        }
+
+        if (yValue) {
+          ctx.beginPath();
+          if(line.text) {
+            ctx.moveTo(chartArea.left + handleWidth + triangleWidth, yValue);
+          } else {
+            ctx.moveTo(chartArea.left, yValue);
+          }
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = style;
+          ctx.fillStyle = style;
+          ctx.lineTo(chartArea.right, yValue);
+          ctx.setLineDash([5, 3]);
+          ctx.stroke();
+        }
+
+        if (line.text) {
+          // Draw handle body
+          const handleY = yValue - (handleHeight / 2);
+          const handleX = chartArea.left;
+          ctx.fillRect(handleX, handleY, handleWidth, handleHeight);
+
+          // Draw handle triangle
+          const triangleX = handleX + triangleWidth + handleWidth;
+          const triangleY = handleY + (handleHeight / 2);
+          ctx.setLineDash([0]);
+          ctx.beginPath();
+
+          ctx.moveTo(triangleX, triangleY);
+          ctx.lineTo(handleX + handleWidth, handleY);
+          ctx.lineTo(handleX + handleWidth, handleY + handleHeight);
+          ctx.fill();
+
+          // Draw handle text
+          ctx.fillStyle = this.config.textColor;
+          ctx.font = this.config.font;
+          ctx.textBaseLine = 'middle';
+          ctx.textAlign = 'center';
+          ctx.fillText(line.text, handleX + (handleWidth / 2), yValue + 5);
+        }
+      }
+    }
+    chartInstance._currentMarker.transition(easingDecimal).draw(ctx);
+    }
+  }]);
+  return HorizonalLinePlugin;
+}(Chart.PluginBase);
+
+Chart.pluginService.register(new HorizonalLinePlugin());

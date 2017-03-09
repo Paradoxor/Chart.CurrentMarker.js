@@ -2,12 +2,13 @@
 
 ## Overview
 This Chart.js plugin allows you to create charts similar to the one below with a marker on the right side of the chart indicating the current value.
+Extension: It now allows you to add multiple "fixed" horizontal lines the chart with a marker on the left side
 
 ## Example
-Have a look here for a usage example: [sample/basic.html](https://github.com/pehlert/Chart.CurrentMarker.js/blob/master/sample/basic.html)
+Have a look here for a usage example: [sample/basic.html](https://github.com/Paradoxor/Chart.CurrentMarker.js/blob/master/sample/basic.html)
 
 This is what it can look like in action:
-![Basic Example Screenshot](https://github.com/pehlert/Chart.CurrentMarker.js/blob/master/sample/basic.jpg)
+![Basic Example Screenshot](https://github.com/Paradoxor/Chart.CurrentMarker.js/blob/master/sample/basic.jpg)
 
 ## Configuration
 
@@ -33,6 +34,23 @@ options: {
 
     // font size and family to use in marker handle
     font: '18px Helvetica'
-  }
+  },      
+  // Array of lines    
+  horizontalLine: [{
+    // the Y-axis position
+    y: 1234,
+    // color of the line and the marker
+    style: 'rgba(255, 0, 0, .4)',
+    // Text on the marker
+    text: 'Line1'
+    // line dash, textColor and font are taken from the currentMarker
+  },
+  {
+    y: 1234 + Math.random(),
+    style: 'rgba(255, 128, 0, 1)',
+    text: 'Line2'
+  }],
+
+
 }
 ```
